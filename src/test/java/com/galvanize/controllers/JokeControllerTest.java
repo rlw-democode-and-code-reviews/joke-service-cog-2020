@@ -102,7 +102,7 @@ class JokeControllerTest {
         when(jokeRepository.findAllByCategory(Category.DADJOKES))
                 .thenReturn(testJokes.stream().filter(j -> j.getCategory().equals(Category.DADJOKES)).collect(Collectors.toList()));
 
-        mvc.perform(get("/api/jokes/category").param("category", Category.DADJOKES.toString()))
+        mvc.perform(get("/api/jokes/category/DADJOKES"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(5)));
     }
