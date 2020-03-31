@@ -16,8 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
@@ -88,12 +87,27 @@ class JokeServiceTest {
     }
 
     @Test
-    void getRandomJoke_byCategory() {
-        when(jokeRepository.findRandomJoke(Category.TECHNOLOGY)).thenReturn(testJokes.get(1));
+    void getRandomJoke() {
+        when(jokeRepository.findRandomJoke()).thenReturn(testJokes.get(1));
 
-        Joke actualJoke = jokeService.getRandomJoke(Category.TECHNOLOGY);
+        Joke actualJoke = jokeService.getRandomJoke();
 
         assertNotNull(actualJoke);
+    }
+
+    @Test
+    void getRandomJokeByCategory_noCategory() {
+        when(jokeRepository.findRandomJokeByCategory(anyString())).thenReturn(testJokes.get(4));
+        Joke actualJoke = jokeService.getRandomeJokeByCategory(Category.NA);
+        assertNotNull(actualJoke);
+    }
+
+    @Test
+    void getRandomJokeByCategory_withCategory() {
+        when(jokeRepository.findRandomJokeByCategory(testJokes.get(3).getCategory().toString())).thenReturn(testJokes.get(3));
+        Joke actualJoke = jokeService.getRandomeJokeByCategory(testJokes.get(3).getCategory());
+        assertNotNull(actualJoke);
+        assertEquals(testJokes.get(3).getCategory().toString(), actualJoke.getCategory().toString());
     }
 
     @Test

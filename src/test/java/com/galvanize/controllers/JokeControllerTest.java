@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -110,15 +111,24 @@ class JokeControllerTest {
 //    GET: random joke by optional category (see sql below)
     @Test
     void getRandomJoke_withCategory() throws Exception {
-        when(jokeRepository.findRandomJoke(Category.TECHNOLOGY)).thenReturn(testJokes.get(2));
+        when(jokeRepository.findRandomJokeByCategory(testJokes.get(2).getCategory().toString())).thenReturn(testJokes.get(2));
 
-        mvc.perform(get("/api/jokes/random").param("category", Category.TECHNOLOGY.toString()))
+        mvc.perform(get("/api/jokes/random").param("category", testJokes.get(2).getCategory().toString()))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.category", is(Category.TECHNOLOGY.toString())));
+                .andExpect(jsonPath("$.category", is(testJokes.get(2).getCategory().toString())));
 
     }
 
-//    PATCH: update the category, or text of a joke
+    @Test
+    void getRandomJoke_noCategory() throws Exception {
+        when(jokeRepository.findRandomJokeByCategory(anyString())).thenReturn(testJokes.get(2));
+
+        mvc.perform(get("/api/jokes/random"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.category", is(testJokes.get(2).getCategory().toString())));
+    }
+
+    //    PATCH: update the category, or text of a joke
 
 //    DELETE: delete a joke by id
     @Test

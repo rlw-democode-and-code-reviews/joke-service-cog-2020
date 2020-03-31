@@ -40,8 +40,20 @@ public class JokeController {
     }
 
     @GetMapping("/random")
-    public Joke getRandomJoke(@RequestParam(required = false) Category category){
-        return jokeService.getRandomJoke(category);
+    public ResponseEntity<Joke> getRandomJoke(@RequestParam(required = false, defaultValue = "%") String category){
+        Joke randomJoke;
+        if(category.equals("%")){
+            randomJoke = jokeService.getRandomeJokeByCategory(Category.NA);
+            return ResponseEntity.ok(randomJoke);
+        }else{
+            Category cat = Category.valueOf(category);
+            if (cat != null) {
+                randomJoke = jokeService.getRandomeJokeByCategory(Category.valueOf(category));
+                return ResponseEntity.ok(randomJoke);
+            }else{
+                return ResponseEntity.notFound().header("errorMsg", "Category "+category+" is not valid").build();
+            }
+        }
     }
 
     @DeleteMapping("/{id}")
