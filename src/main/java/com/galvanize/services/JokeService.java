@@ -1,5 +1,6 @@
 package com.galvanize.services;
 
+import com.galvanize.exception.RecordNotFoundException;
 import com.galvanize.jokes.entities.Category;
 import com.galvanize.jokes.entities.Joke;
 import com.galvanize.repositories.JokeRepository;
@@ -26,5 +27,17 @@ public class JokeService {
 
     public List<Joke> findJokesByCategory(Category category) {
         return jokeRepository.findAllByCategory(category);
+    }
+
+    public Joke getRandomJoke(Category category) {
+        return jokeRepository.findRandomJoke(category);
+    }
+
+    public void deleteById(long id) {
+        if(jokeRepository.existsById(id)) {
+            jokeRepository.deleteById(id);
+        }else{
+            throw new RecordNotFoundException("Joke number "+id+" was not found" );
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.galvanize.services;
 
+import com.galvanize.exception.RecordNotFoundException;
 import com.galvanize.jokes.entities.Category;
 import com.galvanize.jokes.entities.Joke;
 import com.galvanize.repositories.JokeRepository;
@@ -16,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 class JokeServiceTest {
@@ -69,5 +71,27 @@ class JokeServiceTest {
         List<Joke> actualJokes = jokeService.findJokesByCategory(Category.DADJOKES);
 
         assertEquals(5, actualJokes.size());
+    }
+
+    @Test
+    void getRandomJoke_byCategory() {
+        when(jokeRepository.findRandomJoke(Category.TECHNOLOGY)).thenReturn(testJokes.get(1));
+
+        Joke actualJoke = jokeService.getRandomJoke(Category.TECHNOLOGY);
+
+        assertNotNull(actualJoke);
+    }
+
+    @Test
+    void deleteById() {
+        jokeService.deleteById(1000L);
+        verify(jokeRepository).deleteById(1000L);
+    }
+
+    @Test
+    void deleteById_notExist_throwsException() {
+        when(jokeRepository.existsById(1000L)).thenReturn(false);
+
+        assertThrows(RecordNotFoundException.class, () -> jokeService.deleteById(1000L));
     }
 }

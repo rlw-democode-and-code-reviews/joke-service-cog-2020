@@ -16,11 +16,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -43,7 +45,7 @@ class JokeControllerTest {
         assertNotNull(controller);
 
         //Generate Test Data
-        for (int i = 0; i <10; i++) {
+        for (int i = 1; i <=10; i++) {
             if(i %2 == 0){
                 testJokes.add(new Joke((long) (i * 1000), Category.DADJOKES, "This is a dad joke number "+i));
             }else{
@@ -90,8 +92,30 @@ class JokeControllerTest {
     }
 
 //    GET: random joke by optional category (see sql below)
+    @Test
+    void getRandomJoke_withCategory() throws Exception {
+        when(jokeRepository.findRandomJoke(Category.TECHNOLOGY)).thenReturn(testJokes.get(1));
+
+        mvc.perform(get("/api/jokes/random").param("category", Category.TECHNOLOGY.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.category", is(Category.TECHNOLOGY.toString())));
+
+    }
+
 //    PATCH: update the category, or text of a joke
 //    DELETE: delete a joke by id
+    @Test
+    void deleteJokeById_notExists() throws Exception {
+        mvc.perform(delete("/api/jokes/1000"))
+                .andExpect(status().isNoContent())
+                .andExpect(header().exists("errorMsg"));
+    }
 
+    @Test
+    void deleteJokeById_exists() throws Exception {
+        when(jokeRepository.existsById(1000L)).thenReturn(true);
 
+        mvc.perform(delete("/api/jokes/1000"))
+                .andExpect(status().isOk());
+    }
 }
