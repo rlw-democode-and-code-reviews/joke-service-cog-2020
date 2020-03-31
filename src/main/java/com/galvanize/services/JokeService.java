@@ -29,8 +29,14 @@ public class JokeService {
         return jokeRepository.findAllByCategory(category);
     }
 
-    public Joke getRandomJoke(Category category) {
-        return jokeRepository.findRandomJoke(category);
+    public Joke getRandomJoke() {
+        return jokeRepository.findRandomJoke();
+    }
+
+    public Joke getRandomeJokeByCategory(Category category){
+        String catString = category == Category.NA ? "%" : category.toString();
+
+        return jokeRepository.findRandomJokeByCategory(catString);
     }
 
     public void deleteById(long id) {
