@@ -12,8 +12,10 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class JokeServiceTest {
@@ -46,5 +48,16 @@ class JokeServiceTest {
         List<Joke> actualJokes = jokeService.getAllJokes();
         assertEquals(testJokes.size(), actualJokes.size());
         assertTrue(testJokes.containsAll(actualJokes));
+    }
+
+    @Test
+    void findJokesBySearchString() {
+        String searchString = "technology joke";
+        when(jokeRepository.findAllByJokeContains(searchString))
+                .thenReturn(testJokes.stream().filter(j -> j.getJoke().contains(searchString)).collect(Collectors.toList()));
+
+        List<Joke> actualJokes = jokeService.findJokeContaining(searchString);
+
+        assertEquals(5, actualJokes.size());
     }
 }

@@ -13,6 +13,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -66,7 +67,20 @@ class JokeControllerTest {
     }
 
 //    GET: all jokes containing a given search string (bonus: add optional category to search)
+    @Test
+    void searchJokesByString() throws Exception {
+        String searchString = "technology joke";
+        when(jokeRepository.findAllByJokeContains(searchString))
+                .thenReturn(testJokes.stream().filter(j -> j.getJoke().contains(searchString)).collect(Collectors.toList()));
+
+        mvc.perform(get("/api/jokes/search").param("searchString", searchString))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(5)));
+    }
+
 //    GET: all jokes by category
+
+
 //    GET: random joke by optional category (see sql below)
 //    PATCH: update the category, or text of a joke
 //    DELETE: delete a joke by id

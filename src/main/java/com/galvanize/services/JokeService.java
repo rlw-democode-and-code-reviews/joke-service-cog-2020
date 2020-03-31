@@ -18,4 +18,8 @@ public class JokeService {
     public List<Joke> getAllJokes() {
         return jokeRepository.findAll();
     }
+
+    public List<Joke> findJokeContaining(String searchString) {
+        return jokeRepository.findAllByJokeContains(searchString);
+    }
 }
