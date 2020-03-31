@@ -34,8 +34,8 @@ public class JokeController {
         return jokeService.findJokeContaining(searchString);
     }
 
-    @GetMapping("/category")
-    public List<Joke> getJokesByCategory(@RequestParam Category category){
+    @GetMapping("/category/{category}")
+    public List<Joke> getJokesByCategory(@PathVariable Category category){
         return jokeService.findJokesByCategory(category);
     }
 
