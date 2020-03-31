@@ -60,4 +60,14 @@ class JokeServiceTest {
 
         assertEquals(5, actualJokes.size());
     }
+
+    @Test
+    void findJokesByCategory() {
+        when(jokeRepository.findAllByCategory(Category.DADJOKES))
+                .thenReturn(testJokes.stream().filter(j -> j.getCategory().equals(Category.DADJOKES)).collect(Collectors.toList()));
+
+        List<Joke> actualJokes = jokeService.findJokesByCategory(Category.DADJOKES);
+
+        assertEquals(5, actualJokes.size());
+    }
 }

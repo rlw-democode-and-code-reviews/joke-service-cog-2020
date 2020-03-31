@@ -1,5 +1,6 @@
 package com.galvanize.controllers;
 
+import com.galvanize.jokes.entities.Category;
 import com.galvanize.jokes.entities.Joke;
 import com.galvanize.services.JokeService;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,5 +28,10 @@ public class JokeController {
     @GetMapping("/search")
     public List<Joke> getJokesContaining(@RequestParam String searchString){
         return jokeService.findJokeContaining(searchString);
+    }
+
+    @GetMapping("/category")
+    public List<Joke> getJokesByCategory(@RequestParam Category category){
+        return jokeService.findJokesByCategory(category);
     }
 }

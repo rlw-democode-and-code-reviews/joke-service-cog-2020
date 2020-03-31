@@ -1,5 +1,6 @@
 package com.galvanize.services;
 
+import com.galvanize.jokes.entities.Category;
 import com.galvanize.jokes.entities.Joke;
 import com.galvanize.repositories.JokeRepository;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,9 @@ public class JokeService {
 
     public List<Joke> findJokeContaining(String searchString) {
         return jokeRepository.findAllByJokeContains(searchString);
+    }
+
+    public List<Joke> findJokesByCategory(Category category) {
+        return jokeRepository.findAllByCategory(category);
     }
 }

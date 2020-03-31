@@ -79,7 +79,15 @@ class JokeControllerTest {
     }
 
 //    GET: all jokes by category
+    @Test
+    void getJokesByCategory() throws Exception {
+        when(jokeRepository.findAllByCategory(Category.DADJOKES))
+                .thenReturn(testJokes.stream().filter(j -> j.getCategory().equals(Category.DADJOKES)).collect(Collectors.toList()));
 
+        mvc.perform(get("/api/jokes/category").param("category", Category.DADJOKES.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(5)));
+    }
 
 //    GET: random joke by optional category (see sql below)
 //    PATCH: update the category, or text of a joke
