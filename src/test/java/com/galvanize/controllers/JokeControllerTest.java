@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -109,7 +110,7 @@ class JokeControllerTest {
 //    GET: random joke by optional category (see sql below)
     @Test
     void getRandomJoke_withCategory() throws Exception {
-        when(jokeRepository.findRandomJoke(Category.TECHNOLOGY)).thenReturn(testJokes.get(1));
+        when(jokeRepository.findRandomJoke(Category.TECHNOLOGY)).thenReturn(testJokes.get(2));
 
         mvc.perform(get("/api/jokes/random").param("category", Category.TECHNOLOGY.toString()))
                 .andExpect(status().isOk())
@@ -122,6 +123,8 @@ class JokeControllerTest {
 //    DELETE: delete a joke by id
     @Test
     void deleteJokeById_notExists() throws Exception {
+        when(jokeRepository.existsById(anyLong())).thenReturn(false);
+
         mvc.perform(delete("/api/jokes/1000"))
                 .andExpect(status().isNoContent())
                 .andExpect(header().exists("errorMsg"));

@@ -1,14 +1,15 @@
 package com.galvanize.jokes.entities;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
-@Entity(name = "jokes")
+@Entity
+@Table(name = "jokes")
 public class Joke {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long jokeId;
+    @Column(name = "category")
+    @Enumerated(EnumType.STRING)
     Category category;
     String joke;
 

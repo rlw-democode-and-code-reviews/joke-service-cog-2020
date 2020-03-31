@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
@@ -97,6 +98,7 @@ class JokeServiceTest {
 
     @Test
     void deleteById() {
+        when(jokeRepository.existsById(anyLong())).thenReturn(true);
         jokeService.deleteById(1000L);
         verify(jokeRepository).deleteById(1000L);
     }

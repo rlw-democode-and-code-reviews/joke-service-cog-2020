@@ -13,6 +13,6 @@ public interface JokeRepository extends JpaRepository<Joke, Long> {
     List<Joke> findAllByJokeContains(String searchString);
     List<Joke> findAllByCategory(Category category);
 
-    @Query(value = "select * from jokes j  where category like ?1 order by RAND() LIMIT 1")
+    @Query(value = "select * from jokes j  where category like ?1 order by RAND() LIMIT 1", nativeQuery = true)
     Joke findRandomJoke(Category category);
 }
