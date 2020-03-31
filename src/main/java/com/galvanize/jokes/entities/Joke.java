@@ -14,7 +14,13 @@ public class Joke {
 
     public Joke() { }
 
-    public Joke(Category category, String joke) {
+    public Joke(Long jokeId, Category category, String joke){
+        this.jokeId = jokeId;
+        this.category = category;
+        this.joke = joke;
+    }
+
+    public Joke(Category category, String joke){
         this.category = category;
         this.joke = joke;
     }
