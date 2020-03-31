@@ -40,4 +40,8 @@ public class JokeService {
             throw new RecordNotFoundException("Joke number "+id+" was not found" );
         }
     }
+
+    public Joke addJoke(Joke joke) {
+        return jokeRepository.save(joke);
+    }
 }

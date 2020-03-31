@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.verify;
 
@@ -42,6 +43,18 @@ class JokeServiceTest {
                 testJokes.add(new Joke((long) (i * 2000), Category.TECHNOLOGY, "This is a technology joke number "+i));
             }
         }
+    }
+
+    @Test
+    void addNewJoke() {
+        Joke newJoke = new Joke(Category.MOMJOKES, "The boy fell in the mud... It's a dirty joke");
+        newJoke.setJokeId(9999L);
+
+        when(jokeRepository.save(any(Joke.class))).thenReturn(newJoke);
+
+        Joke actualJoke = jokeService.addJoke(newJoke);
+
+        assertNotNull(newJoke.getJoke());
     }
 
     @Test

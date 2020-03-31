@@ -1,14 +1,17 @@
 package com.galvanize.controllers;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galvanize.jokes.entities.Category;
 import com.galvanize.jokes.entities.Joke;
 import com.galvanize.repositories.JokeRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.ArrayList;
@@ -18,10 +21,8 @@ import java.util.stream.Collectors;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -36,6 +37,8 @@ class JokeControllerTest {
 
     @MockBean
     JokeRepository jokeRepository;
+
+    ObjectMapper mapper = new ObjectMapper();
 
     List<Joke> testJokes = new ArrayList<>();
 
@@ -56,8 +59,20 @@ class JokeControllerTest {
     }
 
 //    POST: new joke - accept any joke in one of the specified categories
-//    GET: all jokes in db
+    @Test
+    void createNewJoke() throws Exception {
+        Joke newJoke = new Joke(Category.MOMJOKES, "This is a great MOM joke!");
+        newJoke.setJokeId(9999L);
+        String jokeJson = mapper.writeValueAsString(newJoke);
 
+        when(jokeRepository.save(ArgumentMatchers.any(Joke.class))).thenReturn(newJoke);
+
+        mvc.perform(post("/api/jokes").contentType(MediaType.APPLICATION_JSON).content(jokeJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.jokeId").exists());
+    }
+
+    //    GET: all jokes in db
     @Test
     void getAllJokes() throws Exception {
         when(jokeRepository.findAll()).thenReturn(testJokes);
@@ -103,6 +118,7 @@ class JokeControllerTest {
     }
 
 //    PATCH: update the category, or text of a joke
+
 //    DELETE: delete a joke by id
     @Test
     void deleteJokeById_notExists() throws Exception {

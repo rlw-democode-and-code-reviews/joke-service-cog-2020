@@ -19,6 +19,11 @@ public class JokeController {
         this.jokeService = jokeService;
     }
 
+    @PostMapping
+    public Joke createJoke(@RequestBody Joke joke){
+        return jokeService.addJoke(joke);
+    }
+
     @GetMapping
     public List<Joke> getAllJokes(){
         return jokeService.getAllJokes();
