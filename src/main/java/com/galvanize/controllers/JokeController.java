@@ -1,6 +1,5 @@
 package com.galvanize.controllers;
 
-import com.galvanize.exception.RecordNotFoundException;
 import com.galvanize.jokes.entities.Category;
 import com.galvanize.jokes.entities.Joke;
 import com.galvanize.services.JokeService;
