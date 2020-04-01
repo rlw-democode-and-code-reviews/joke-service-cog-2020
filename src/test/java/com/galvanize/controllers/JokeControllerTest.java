@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.galvanize.jokes.entities.Category;
 import com.galvanize.jokes.entities.Joke;
 import com.galvanize.repositories.JokeRepository;
+import com.galvanize.services.JokeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -38,7 +39,7 @@ class JokeControllerTest {
     JokeController controller;
 
     @MockBean
-    JokeRepository jokeRepository;
+    JokeService jokeService;
 
     ObjectMapper mapper = new ObjectMapper();
 
@@ -67,7 +68,7 @@ class JokeControllerTest {
         newJoke.setJokeId(9999L);
         String jokeJson = mapper.writeValueAsString(newJoke);
 
-        when(jokeRepository.save(ArgumentMatchers.any(Joke.class))).thenReturn(newJoke);
+        when(jokeService.addJoke(ArgumentMatchers.any(Joke.class))).thenReturn(newJoke);
 
         mvc.perform(post("/api/jokes").contentType(MediaType.APPLICATION_JSON).content(jokeJson))
                 .andExpect(status().isOk())
@@ -77,7 +78,7 @@ class JokeControllerTest {
     //    GET: all jokes in db
     @Test
     void getAllJokes() throws Exception {
-        when(jokeRepository.findAll()).thenReturn(testJokes);
+        when(jokeService.getAllJokes()).thenReturn(testJokes);
 
         mvc.perform(get("/api/jokes"))
                 .andExpect(status().isOk())
@@ -89,7 +90,7 @@ class JokeControllerTest {
     @Test
     void searchJokesByString() throws Exception {
         String searchString = "technology joke";
-        when(jokeRepository.findAllByJokeContains(searchString))
+        when(jokeService.findJokeContaining(searchString))
                 .thenReturn(testJokes.stream().filter(j -> j.getJoke().contains(searchString)).collect(Collectors.toList()));
 
         mvc.perform(get("/api/jokes/search").param("searchString", searchString))
@@ -100,7 +101,7 @@ class JokeControllerTest {
 //    GET: all jokes by category
     @Test
     void getJokesByCategory() throws Exception {
-        when(jokeRepository.findAllByCategory(Category.DADJOKES))
+        when(jokeService.findJokesByCategory(Category.DADJOKES))
                 .thenReturn(testJokes.stream().filter(j -> j.getCategory().equals(Category.DADJOKES)).collect(Collectors.toList()));
 
         mvc.perform(get("/api/jokes/category/DADJOKES"))
@@ -111,8 +112,8 @@ class JokeControllerTest {
 //    GET: random joke by optional category (see sql below)
     @Test
     void getRandomJoke_withCategory() throws Exception {
-        when(jokeRepository.findRandomJokeByCategory(testJokes.get(2).getCategory().toString())).thenReturn(testJokes.get(2));
-
+//        when(jokeRepository.findRandomJokeByCategory(testJokes.get(2).getCategory().toString())).thenReturn(testJokes.get(2));
+        when(jokeService.getRandomeJokeByCategory(testJokes.get(2).getCategory())).thenReturn(testJokes.get(2));
         mvc.perform(get("/api/jokes/random").param("category", testJokes.get(2).getCategory().toString()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.category", is(testJokes.get(2).getCategory().toString())));
@@ -121,7 +122,7 @@ class JokeControllerTest {
 
     @Test
     void getRandomJoke_noCategory() throws Exception {
-        when(jokeRepository.findRandomJokeByCategory(anyString())).thenReturn(testJokes.get(2));
+        when(jokeService.getRandomeJokeByCategory(Category.NA)).thenReturn(testJokes.get(2));
 
         mvc.perform(get("/api/jokes/random"))
                 .andExpect(status().isOk())
@@ -133,7 +134,8 @@ class JokeControllerTest {
 //    DELETE: delete a joke by id
     @Test
     void deleteJokeById_notExists() throws Exception {
-        when(jokeRepository.existsById(anyLong())).thenReturn(false);
+
+        when(jokeService.existsById(anyLong())).thenReturn(false);
 
         mvc.perform(delete("/api/jokes/1000"))
                 .andExpect(status().isNoContent())
@@ -142,7 +144,7 @@ class JokeControllerTest {
 
     @Test
     void deleteJokeById_exists() throws Exception {
-        when(jokeRepository.existsById(1000L)).thenReturn(true);
+        when(jokeService.existsById(1000L)).thenReturn(true);
 
         mvc.perform(delete("/api/jokes/1000"))
                 .andExpect(status().isOk());

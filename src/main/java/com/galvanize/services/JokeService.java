@@ -17,6 +17,10 @@ public class JokeService {
         this.jokeRepository = jokeRepository;
     }
 
+    public boolean existsById(Long id){
+        return jokeRepository.existsById(id);
+    }
+
     public List<Joke> getAllJokes() {
         return jokeRepository.findAll();
     }
@@ -40,7 +44,7 @@ public class JokeService {
     }
 
     public void deleteById(long id) {
-        if(jokeRepository.existsById(id)) {
+        if(existsById(id)) {
             jokeRepository.deleteById(id);
         }else{
             throw new RecordNotFoundException("Joke number "+id+" was not found" );

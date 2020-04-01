@@ -58,11 +58,11 @@ public class JokeController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteJokeById(@PathVariable Long id){
-        try{
+        if(jokeService.existsById(id)){
             jokeService.deleteById(id);
             return ResponseEntity.ok("Deleted joke number "+id);
-        }catch (RecordNotFoundException e){
-            return ResponseEntity.noContent().header("errorMsg", e.getMessage()).build();
+        }else{
+            return ResponseEntity.noContent().header("errorMsg", "Joke number "+id+" not found").build();
         }
     }
 }
